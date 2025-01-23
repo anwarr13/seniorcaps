@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CSS Text Portrait</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background-color: #000;
+      color: white;
+      font-family: monospace;
+    }
+
+    .portrait {
+      position: relative;
+      width: 400px; /* Adjust portrait size */
+      height: 400px; /* Adjust portrait size */
+      display: grid;
+      grid-template-columns: repeat(40, 1fr); /* 40 characters per row */
+      grid-auto-rows: 10px; /* Height of each text line */
+      overflow: hidden;
+      text-align: center;
+    }
+
+    .portrait span {
+      font-size: 10px; /* Adjust font size */
+      line-height: 10px; /* Match grid row height */
+      mix-blend-mode: screen;
+    }
+
+    .hidden-image {
+      display: none;
+    }
+  </style>
+</head>
+<body>
+  <div class="portrait" id="portrait"></div>
+  <img src="anwar.jpg" class="hidden-image" id="hiddenImage" alt="Hidden">
+  <script>
+    const portrait = document.getElementById("portrait");
+    const hiddenImage = document.getElementById("hiddenImage");
+    const charSet = "@%#*+=-:. "; // Characters for brightness mapping
+
+    // Load the image and process brightness
+    hiddenImage.onload = () => {
+      const canvas = document.createElement("canvas");
+      const context = canvas.getContext("2d");
+      const width = 40; // Match grid-template-columns
+      const height = 40; // Adjust for portrait dimensions
+      canvas.width = width;
+      canvas.height = height;
+
+      // Draw the image into the canvas
+      context.drawImage(hiddenImage, 0, 0, width, height);
+      const imageData = context.getImageData(0, 0, width, height).data;
+
+      // Generate text portrait
+      for (let i = 0; i < imageData.length; i += 4) {
+        const r = imageData[i];
+        const g = imageData[i + 1];
+        const b = imageData[i + 2];
+        const brightness = (r + g + b) / 3;
+        const charIndex = Math.floor((brightness / 255) * (charSet.length - 1));
+        const char = charSet[charIndex];
+
+        const span = document.createElement("span");
+        span.textContent = char;
+
+        portrait.appendChild(span);
+      }
+    };
+
+    // Set your image source
+    hiddenImage.src = "your-image.jpg"; // Replace with your image path
+  </script>
+</body>
+</html>
